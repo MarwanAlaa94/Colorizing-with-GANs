@@ -63,15 +63,8 @@ def show_rgb(rgb_original, rgb_pred):
     grey = color.rgb2grey(rgb_original)
 
     fig = plt.figure()
-    fig.add_subplot(1, 3, 1).set_title('greyscale')
-    plt.axis('off')
-    plt.imshow(grey, cmap='gray')
 
-    fig.add_subplot(1, 3, 2).set_title('original')
-    plt.axis('off')
-    plt.imshow(rgb_original)
-
-    fig.add_subplot(1, 3, 3).set_title('gan')
+    fig.add_subplot(1, 1, 1).set_title('gan')
     plt.axis('off')
     plt.imshow(rgb_pred)
 
@@ -85,15 +78,21 @@ def show_lab(lab_original, lab_pred, i):
     grey = color.rgb2grey(lab_original)
 
     fig = plt.figure()
-    fig.add_subplot(1, 3, 1).set_title('greyscale')
-    plt.axis('off')
-    plt.imshow(grey, cmap='gray')
-
-    fig.add_subplot(1, 3, 2).set_title('original')
-    plt.axis('off')
-    plt.imshow(rgb_original)
-
-    fig.add_subplot(1, 3, 3).set_title('gan')
+    fig.add_subplot(1, 1, 1).set_title('gan')
     plt.axis('off')
     plt.imshow(rgb_pred)
-    fig.savefig('results/' + str(i) + '.png')
+    fig.savefig('mickeyRes/' + str(i) + '.png')
+    plt.close(fig)   
+
+def evaluate(img_real, img_fake, thres):
+    diffL = np.abs(np.round(img_real[..., 0]) - np.round(img_fake[..., 0]))
+    diffA = np.abs(np.round(img_real[..., 1]) - np.round(img_fake[..., 1]))
+    diffB = np.abs(np.round(img_real[..., 2]) - np.round(img_fake[..., 2]))
+
+    predL = np.cast['f8'](np.less_equal(diffL, 1 * thres))     
+    predA = np.cast['f8'](np.less_equal(diffA, 2 * thres))     
+    predB = np.cast['f8'](np.less_equal(diffB, 2 * thres))     
+
+    pred = predL * predA * predB
+
+    return np.mean(pred)
